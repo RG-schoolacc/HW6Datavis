@@ -1,0 +1,64 @@
+---
+title: "GartleyHW6"
+author: "Roy Gartley"
+date: "2026-04-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+```
+
+
+
+```{r }
+load("house_prices.rda")
+house_prices <- house_prices %>%
+  mutate(year_num = as.numeric(format(as.Date(date), "%Y")))
+# --- (a) Line plots for house_price_index ---
+plot_a <- ggplot(house_prices, aes(x = year_num, y = house_price_index)) +
+  geom_line() +
+  facet_wrap(~state) +
+  scale_x_continuous(
+    breaks = c(1980, 2000, 2020),
+    labels = c("'80", "'00", "'20"),
+    # without limits 20 does not show 
+    limits = c(1975, 2022) 
+  ) +labs(title = "House Price Index Trend", x = "Year", y = "HPI")+
+  theme_minimal() +
+  #needed to modify the text size to get the years to show 
+  theme(axis.text.x = element_text(size = 7))
+print(plot_a)
+```
+
+## Comment for this set
+
+Having 50 plots is a lot to look at, but it does clearly show that there are uniqe relationships between house prices and the year for each state.
+With unique responses around the 2008 houseing crisis some subtle and some not so much.
+
+```{r}
+house_reshaped <- house_prices %>%
+  gather(key = "measure", value = "value", -year_num, -state, -date)
+# --- (c) Replicate graph with two lines ---
+plot_c <- ggplot(house_reshaped, aes(x = year_num, y = value, color = measure)) +
+  geom_line() +
+  facet_wrap(~state) +
+  scale_x_continuous(
+    breaks = c(1980, 2000, 2020),
+    labels = c("'80", "'00", "'20"),
+    limits = c(1975, 2022)
+  ) +labs(title = "House Price Index Trend", x = "Year", y = "HPI")+
+  theme_minimal() +
+  #needed to modify the text size to get the years to show 
+  theme(axis.text.x = element_text(size = 7))
+
+print(plot_c)
+```
+
+## Comment for this set
+You cannot pull anything meaningful from these graphs when it comes to correlation.
+Unemployment is just too small of a value vs the 100+ value from house price index.
+No its not a good set of charts. 
